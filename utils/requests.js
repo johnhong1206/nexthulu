@@ -91,6 +91,25 @@ export const getMovieById = (id) => {
   }
 };
 
+export const getTvById = (id) => {
+  if (environment === "prod") {
+    return axios
+      .get(
+        `${prod.url}/tv/${id}?api_key=${prod.api_key}&language=${prod.language}`
+      )
+      .then((res) => {
+        return res.data;
+      })
+      .catch((error) => {
+        console.error("getMovieById", error);
+      });
+  } else {
+    return axios.get(`${dev.url}/api/v1/tv/${id}`).then((res) => {
+      return res.data;
+    });
+  }
+};
+
 export const deleteMovie = (id) => {
   return axios.delete(`${dev.url}/api/v1/movies/${id}`).then((res) => {
     return res.data;
