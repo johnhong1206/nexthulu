@@ -1,5 +1,19 @@
 //const API_KEY = process.env.API_KEY;
 
+import axios from "axios";
+
+const dev = {
+  url: "http://localhost:3000",
+};
+
+const prod = {
+  url: "https://api.themoviedb.org/3",
+  // api_key: process.env.API_ENV,
+  api_key: "937131eba58ea1dee39d4b5fda3009f2",
+  language: "en-US",
+};
+
+export const environment = "prod";
 const API_KEY = "937131eba58ea1dee39d4b5fda3009f2";
 
 export default {
@@ -51,4 +65,61 @@ export default {
     title: "TV",
     url: `/discover/movie?api_key=${API_KEY}&with_genres=10770`,
   },
+};
+
+const fetchMovie = (id) => {
+  return `/movie/${id}?api_key=${API_KEY}&append_to_response=videos,release_dates`;
+};
+export { fetchMovie };
+
+export const getMovieById = (id) => {
+  if (environment === "prod") {
+    return axios
+      .get(
+        `${prod.url}/movie/${id}?api_key=${prod.api_key}&language=${prod.language}`
+      )
+      .then((res) => {
+        return res.data;
+      })
+      .catch((error) => {
+        console.error("getMovieById", error);
+      });
+  } else {
+    return axios.get(`${dev.url}/api/v1/movies/${id}`).then((res) => {
+      return res.data;
+    });
+  }
+};
+
+export const deleteMovie = (id) => {
+  return axios.delete(`${dev.url}/api/v1/movies/${id}`).then((res) => {
+    return res.data;
+  });
+};
+
+export const getCategories = () => {
+  if (environment === "prod") {
+    return axios
+      .get(
+        `${prod.url}/genre/movie/list?api_key=${prod.api_key}&language=${prod.language}`
+      )
+      .then((res) => {
+        const categories = [{ id: 0, name: "All" }];
+        categories.push(...res.data.genres);
+        return categories;
+      })
+      .catch((error) => {
+        console.error("getCategories", error);
+      });
+  } else {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        try {
+          resolve(CATEGORY_DATA);
+        } catch (error) {
+          reject(`Cannot fetch data: ${error}`);
+        }
+      }, 200);
+    });
+  }
 };
