@@ -142,3 +142,26 @@ export const getCategories = () => {
     });
   }
 };
+
+export const getSimilarMovie = (id) => {
+  if (environment === "prod") {
+    return axios
+      .get(
+        `${prod.url}/movie/${id}/similar?api_key=${prod.api_key}&language=en-US&page=1`
+      )
+      .then((res) => {
+        return res.data;
+      })
+      .catch((error) => {
+        console.error("getMovieById", error);
+      });
+  } else {
+    return axios
+      .get(
+        `${dev.url}/api/v1/movies/${id}/similar?api_key=${prod.api_key}&language=${prod.language}&page=1`
+      )
+      .then((res) => {
+        return res.data;
+      });
+  }
+};

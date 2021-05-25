@@ -5,20 +5,19 @@ import {
   environment,
   getMovieById,
   deleteMovie,
+  getSimilarMovie,
   getTvById,
 } from "../../utils/requests";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FireIcon } from "@heroicons/react/outline";
+import SuggestMovie from "../../components/SuggestMovie";
 
-const Movie = (props) => {
-  const [playing, setPlaying] = useState(false);
+const Movie = ({ movie, tv, request }) => {
   const router = useRouter();
   const { id } = router.query;
-  const { movie, tv } = props;
   const base_url = "https://image.tmdb.org/t/p/original/";
-  console.log(tv);
 
   return (
     <div className="">
@@ -81,6 +80,10 @@ const Movie = (props) => {
                 </div>
               </div>
             </div>
+            <div className="mt-10 p-2 lg:p-4">
+              <h1 className=" font-bold text-xl">Suggest Movies</h1>
+              <SuggestMovie request={request} />
+            </div>
           </div>
         </main>
       )}
@@ -139,6 +142,7 @@ const Movie = (props) => {
               </div>
             </div>
           </div>
+          <h1></h1>
         </main>
       )}
       <div className="pb-6" />
@@ -149,7 +153,21 @@ const Movie = (props) => {
 Movie.getInitialProps = async ({ query }) => {
   const movie = await getMovieById(query.id);
   const tv = await getTvById(query.id);
-  return { movie, tv };
+
+  const prod = {
+    url: "https://api.themoviedb.org/3",
+    // api_key: process.env.API_ENV,
+    api_key: "937131eba58ea1dee39d4b5fda3009f2",
+    language: "en-US",
+  };
+
+  const request = await fetch(
+    `https://api.themoviedb.org/3/movie/${query.id}/recommendations?api_key=${prod.api_key}&language=en-US`
+  ).then((res) => res.json());
+
+  console.log("request", request);
+
+  return { movie, tv, request };
 };
 
 export default Movie;
