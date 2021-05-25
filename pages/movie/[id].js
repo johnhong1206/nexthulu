@@ -78,6 +78,7 @@ const Movie = (props) => {
           </div>
         </div>
       </main>
+      <div className="pb-6" />
     </div>
   );
 };
@@ -85,9 +86,6 @@ const Movie = (props) => {
 Movie.getInitialProps = async ({ query }) => {
   const movie = await getMovieById(query.id);
   return { movie };
-
-  const categories = await getCategories();
-  return { categories };
 };
 
 export default Movie;

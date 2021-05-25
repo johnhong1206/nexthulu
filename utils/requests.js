@@ -3,7 +3,7 @@
 import axios from "axios";
 
 const dev = {
-  url: "http://localhost:3000",
+  url: "https://api.themoviedb.org/3",
 };
 
 const prod = {
