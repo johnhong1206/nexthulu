@@ -2,24 +2,19 @@ import { ThumbUpIcon } from "@heroicons/react/outline";
 import Image from "next/image";
 import { forwardRef } from "react";
 import { useRouter } from "next/router";
-import Link from "next/link";
 
-const Thumbnail = forwardRef(({ key, result }, ref) => {
+function CollectionThumbnail({ result }) {
   const base_url = "https://image.tmdb.org/t/p/original/";
   const router = useRouter();
+  console.log("CollectionThumbnail", result);
 
   const navtoDetail = () => {
-    if (result.media_type === "movie") {
-      router.push(`/movie/${result.id}`);
-    } else {
-      router.push(`/tv/${result.id}`);
-    }
+    router.push(`/movie/${result.id}`);
   };
 
   return (
     <div
       onClick={navtoDetail}
-      ref={ref}
       className="p-2 group cursor-pointer transition duration-200 ease-in transform sm:hover:scale-105 hover:z-50"
     >
       <Image
@@ -43,6 +38,6 @@ const Thumbnail = forwardRef(({ key, result }, ref) => {
       </div>
     </div>
   );
-});
+}
 
-export default Thumbnail;
+export default CollectionThumbnail;

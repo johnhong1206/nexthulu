@@ -10,6 +10,7 @@ function Search({ search, searchTv }) {
   const router = useRouter();
   const { id } = router.query;
   const base_url = "https://image.tmdb.org/t/p/original/";
+
   return (
     <div>
       <Head>
@@ -63,7 +64,7 @@ function Search({ search, searchTv }) {
           searchTv.results.map((search) => (
             <>
               {search.backdrop_path ? (
-                <Link href={`/movie/${search.id}`}>
+                <Link href={`/tv/${search.id}`}>
                   <div className="p-2 group cursor-pointer transition duration-200 ease-in transform sm:hover:scale-105 hover:z-50">
                     <Image
                       layout="responsive"

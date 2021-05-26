@@ -1,77 +1,69 @@
-import { useRouter } from "next/router";
 import Head from "next/head";
 import Header from "../../components/Header";
-import {
-  environment,
-  getMovieById,
-  deleteMovie,
-  getSimilarMovie,
-  getTvById,
-} from "../../utils/requests";
-
-import Image from "next/image";
-import { useEffect, useState } from "react";
-import { FireIcon } from "@heroicons/react/outline";
-import SuggestMovie from "../../components/SuggestMovie";
-import Link from "next/link";
+import { getTvById } from "../../utils/requests";
 import SuggestTV from "../../components/SuggestTV";
 import MovieTrailer from "../../components/MovieTrailer";
+import Link from "next/link";
+import Image from "next/image";
+import { useRouter } from "next/router";
+import { FireIcon } from "@heroicons/react/outline";
+import { useEffect, useState } from "react";
 
-const Movie = ({ movie, request, movieTrailer }) => {
+function Tv({ tv, requestTV, tvTrailer }) {
   const router = useRouter();
-  const { id } = router.query;
   const base_url = "https://image.tmdb.org/t/p/original/";
-  const photo = `${base_url}${movie?.backdrop_path}`;
-
-  const [watch, setWatch] = useState(false);
+  const tvphoto = `${base_url}${tv?.backdrop_path}`;
   const [isOpen, setOpen] = useState(false);
 
+  console.log(tv);
   return (
-    <div className="">
+    <div>
       <Head>
-        <title>Hulu {movie.title}</title>
+        <title>Hulu {tv ? tv.title : tv.name}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Header />
       <main className="mx-auto p-2 lg:p-4">
-        {movie && (
+        {tv && (
           <div className="">
             <div
-              style={{ backgroundImage: `url(${photo})` }}
-              className={`sm:grid lg:grid-cols-2 lg:items-center md:space-x-4 bg-cover p-10 h-[120vh] lg:h-screen
+              style={{ backgroundImage: `url(${tvphoto})` }}
+              className={`sm:grid lg:grid-cols-2 lg:items-center md:space-x-4 bg-cover p-10 h-full lg:h-screen
               `}
             >
               <div className=" grid lg:hidden">
                 <Image
                   layout="responsive"
-                  src={`${base_url}${movie.poster_path}`}
+                  src={`${base_url}${tv.poster_path}`}
                   height={1080}
                   width={1920}
                   className="object-contain"
                 />
               </div>
 
-              <div className="mt-10 h-80 max-w-xl bg-transparent bg-gradient-to-l from-[#000000] rounded-2xl">
+              <div className="mt-10 h-auto max-w-xl bg-transparent bg-gradient-to-l from-[#000000] rounded-2xl">
                 <div className="flex flex-col mb-4 p-1">
                   <div className="flex items-center">
                     <div>
                       <h1 className="text-xl md:text-3xl lg:text-5xl">
-                        {movie.title}
+                        {tv.original_name || tv.name}
                       </h1>
                       <div className="flex space-x-4 mt-1">
                         <div className="flex items-center space-x-1">
-                          <h3 className="font-bold">{movie.vote_average}/10</h3>
+                          <h3 className="font-bold">{tv.vote_average}/10</h3>
                           <FireIcon className="h-4 text-yellow-600 brightness-110" />
                         </div>
 
-                        <p className="font-bold">{movie.release_date}</p>
+                        <p className="font-bold">
+                          {tv.release_date || tv.first_air_date}
+                        </p>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 <div className="flex flex-row items-center justify-center lg:items-start lg:justify-start space-x-4">
-                  {movie.genres.map((genre) => (
+                  {tv.genres.map((genre) => (
                     <Link href={`/genres/${genre.id}`}>
                       <div
                         key={genre.id}
@@ -82,13 +74,13 @@ const Movie = ({ movie, request, movieTrailer }) => {
                     </Link>
                   ))}
                 </div>
-                <p className="mt-4">{movie.overview}</p>
+                <p className="mt-4">{tv.overview}</p>
                 <div className="flex space-x-4">
                   <div className="mt-10 cursor-pointer">
-                    {movie.homepage && (
+                    {tv.homepage && (
                       <a
                         className="p-4 bg-gray-800 rounded-2xl hover:bg-gray-500"
-                        href={movie.homepage}
+                        href={tv.homepage}
                         target="_blank"
                         role="button"
                       >
@@ -118,26 +110,25 @@ const Movie = ({ movie, request, movieTrailer }) => {
                 </div>
               </div>
             </div>
-            {movie && movieTrailer && isOpen && (
+            {tv && tvTrailer && isOpen && (
               <div className="mt-10 p-2 lg:p-4">
                 <h1 className=" font-bold text-xl">Movies Trailer</h1>
-                <MovieTrailer movieTrailer={movieTrailer} isOpen={isOpen} />
+                <MovieTrailer movieTrailer={tvTrailer} isOpen={isOpen} />
               </div>
             )}
-
             <div className="mt-10 p-2 lg:p-4">
-              <h1 className=" font-bold text-xl">Suggest Movies</h1>
-              <SuggestMovie request={request} />
+              <h1 className=" font-bold text-xl">Suggest TVs</h1>
+              <SuggestTV requestTV={requestTV} />
             </div>
           </div>
         )}
       </main>
     </div>
   );
-};
+}
 
-Movie.getInitialProps = async ({ query }) => {
-  const movie = await getMovieById(query.id);
+Tv.getInitialProps = async ({ query }) => {
+  const tv = await getTvById(query.id);
 
   const prod = {
     url: "https://api.themoviedb.org/3",
@@ -146,17 +137,15 @@ Movie.getInitialProps = async ({ query }) => {
     language: "en-US",
   };
 
-  const request = await fetch(
-    `https://api.themoviedb.org/3/movie/${query.id}/recommendations?api_key=${prod.api_key}&language=en-US`
+  const tvTrailer = await fetch(
+    `https://api.themoviedb.org/3/tv/${query.id}/videos?api_key=${prod.api_key}&language=en-US`
   ).then((res) => res.json());
 
-  const movieTrailer = await fetch(
-    `https://api.themoviedb.org/3/movie/${query.id}/videos?api_key=${prod.api_key}&language=en-US`
+  const requestTV = await fetch(
+    `https://api.themoviedb.org/3/tv/${query.id}/recommendations?api_key=${prod.api_key}&language=en-US`
   ).then((res) => res.json());
 
-  console.log("request", request);
-
-  return { movie, request, movieTrailer };
+  return { tv, requestTV, tvTrailer };
 };
 
-export default Movie;
+export default Tv;
