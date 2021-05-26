@@ -13,11 +13,20 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { FireIcon } from "@heroicons/react/outline";
 import SuggestMovie from "../../components/SuggestMovie";
+import Link from "next/link";
+import SuggestTV from "../../components/SuggestTV";
+import MovieTrailer from "../../components/MovieTrailer";
 
-const Movie = ({ movie, tv, request }) => {
+const Movie = ({ movie, tv, request, requestTV, movieTrailer, tvTrailer }) => {
   const router = useRouter();
   const { id } = router.query;
   const base_url = "https://image.tmdb.org/t/p/original/";
+  const photo = `${base_url}${movie?.backdrop_path}`;
+  const tvphoto = `${base_url}${tv?.backdrop_path}`;
+  const [watch, setWatch] = useState(false);
+  const [isOpen, setOpen] = useState(false);
+
+  console.log("tvTrailer,", tvTrailer);
 
   return (
     <div className="">
@@ -26,17 +35,25 @@ const Movie = ({ movie, tv, request }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Header />
-      {movie && (
-        <main className="mx-auto p-2 lg:p-4">
+      <main className="mx-auto p-2 lg:p-4">
+        {movie && (
           <div className="">
-            <div className="sm:grid lg:grid-cols-2 lg:items-center md:space-x-4">
-              <Image
-                layout="responsive"
-                src={`${base_url}${movie.backdrop_path || movie.poster_path}`}
-                height={1080}
-                width={1920}
-              />
-              <div className="">
+            <div
+              style={{ backgroundImage: `url(${photo})` }}
+              className={`sm:grid lg:grid-cols-2 lg:items-center md:space-x-4 bg-cover p-10 h-screen lg:h-screen
+              `}
+            >
+              <div className=" grid lg:hidden">
+                <Image
+                  layout="responsive"
+                  src={`${base_url}${movie.poster_path}`}
+                  height={1080}
+                  width={1920}
+                  className="object-contain"
+                />
+              </div>
+
+              <div className="mt-10 h-80 max-w-xl bg-transparent bg-gradient-to-l from-[#000000] rounded-2xl">
                 <div className="flex flex-col mb-4 p-1">
                   <div className="flex items-center">
                     <div>
@@ -57,52 +74,88 @@ const Movie = ({ movie, tv, request }) => {
 
                 <div className="flex flex-row items-center justify-center lg:items-start lg:justify-start space-x-4">
                   {movie.genres.map((genre) => (
-                    <div
-                      key={genre.id}
-                      className=" w-full  h-auto bg-gray-600 rounded-full flex items-center justify-center p-1 hover:animate-pulse cursor-pointer"
-                    >
-                      <p className="text-center">{genre.name}</p>
-                    </div>
+                    <Link href={`/genres/${genre.id}`}>
+                      <div
+                        key={genre.id}
+                        className="w-auto h-auto max-h-full max-w-full bg-gray-600 rounded-full flex items-center justify-center p-1 hover:animate-pulse cursor-pointer"
+                      >
+                        <p className="text-center">{genre.name}</p>
+                      </div>
+                    </Link>
                   ))}
                 </div>
                 <p className="mt-4">{movie.overview}</p>
-                <div className="mt-8 cursor-pointer">
-                  {movie.homepage && (
-                    <a
-                      className="p-4 bg-gray-800 rounded-2xl hover:bg-gray-500"
-                      href={movie.homepage}
-                      target="_blank"
-                      role="button"
+                <div className="flex space-x-4">
+                  <div className="mt-10 cursor-pointer">
+                    {movie.homepage && (
+                      <a
+                        className="p-4 bg-gray-800 rounded-2xl hover:bg-gray-500"
+                        href={movie.homepage}
+                        target="_blank"
+                        role="button"
+                      >
+                        Learn more
+                      </a>
+                    )}
+                  </div>
+                  {isOpen ? (
+                    <div
+                      onClick={() => setOpen(false)}
+                      className="mt-10 cursor-pointer"
                     >
-                      Learn more
-                    </a>
+                      <a className="p-4 bg-gray-800 rounded-2xl hover:bg-gray-500">
+                        Close Trailer
+                      </a>
+                    </div>
+                  ) : (
+                    <div
+                      onClick={() => setOpen(true)}
+                      className="mt-10 cursor-pointer"
+                    >
+                      <a className="p-4 bg-gray-800 rounded-2xl hover:bg-gray-500">
+                        Watch Trailer
+                      </a>
+                    </div>
                   )}
                 </div>
               </div>
             </div>
+            {movie && movieTrailer && isOpen && (
+              <div className="mt-10 p-2 lg:p-4">
+                <h1 className=" font-bold text-xl">Movies Trailer</h1>
+                <MovieTrailer movieTrailer={movieTrailer} isOpen={isOpen} />
+              </div>
+            )}
+
             <div className="mt-10 p-2 lg:p-4">
               <h1 className=" font-bold text-xl">Suggest Movies</h1>
               <SuggestMovie request={request} />
             </div>
           </div>
-        </main>
-      )}
-      {tv && (
-        <main className="mx-auto p-2 lg:p-4">
+        )}
+        {tv && (
           <div className="">
-            <div className="sm:grid lg:grid-cols-2 lg:items-center md:space-x-4">
-              <Image
-                layout="responsive"
-                src={`${base_url}${tv.backdrop_path || tv.poster_path}`}
-                height={1080}
-                width={1920}
-              />
-              <div className="">
+            <div
+              style={{ backgroundImage: `url(${tvphoto})` }}
+              className={`sm:grid lg:grid-cols-2 lg:items-center md:space-x-4 bg-cover p-10 h-full lg:h-screen
+              `}
+            >
+              <div className=" grid lg:hidden">
+                <Image
+                  layout="responsive"
+                  src={`${base_url}${tv.poster_path}`}
+                  height={1080}
+                  width={1920}
+                  className="object-contain"
+                />
+              </div>
+
+              <div className="mt-10 h-auto max-w-xl bg-transparent bg-gradient-to-l from-[#000000] rounded-2xl">
                 <div className="flex flex-col mb-4 p-1">
                   <div className="flex items-center">
                     <div>
                       <h1 className="text-xl md:text-3xl lg:text-5xl">
-                        {tv.name}
+                        {tv.title}
                       </h1>
                       <div className="flex space-x-4 mt-1">
                         <div className="flex items-center space-x-1">
@@ -116,36 +169,67 @@ const Movie = ({ movie, tv, request }) => {
                   </div>
                 </div>
 
-                <div className="flex flex-row space-x-4">
+                <div className="flex flex-row items-center justify-center lg:items-start lg:justify-start space-x-4">
                   {tv.genres.map((genre) => (
-                    <div
-                      key={genre.id}
-                      className="  w-full  h-auto bg-gray-600 rounded-full flex items-center justify-center p-1 hover:animate-pulse cursor-pointer"
-                    >
-                      <p className="text-center">{genre.name}</p>
-                    </div>
+                    <Link href={`/genres/${genre.id}`}>
+                      <div
+                        key={genre.id}
+                        className="w-auto h-auto max-h-full max-w-full bg-gray-600 rounded-full flex items-center justify-center p-1 hover:animate-pulse cursor-pointer"
+                      >
+                        <p className="text-center">{genre.name}</p>
+                      </div>
+                    </Link>
                   ))}
                 </div>
                 <p className="mt-4">{tv.overview}</p>
-                <div className="mt-8 cursor-pointer">
-                  {tv.homepage && (
-                    <a
-                      className="p-4 bg-gray-800 rounded-2xl hover:bg-gray-500"
-                      href={tv.homepage}
-                      target="_blank"
-                      role="button"
+                <div className="flex space-x-4">
+                  <div className="mt-10 cursor-pointer">
+                    {tv.homepage && (
+                      <a
+                        className="p-4 bg-gray-800 rounded-2xl hover:bg-gray-500"
+                        href={tv.homepage}
+                        target="_blank"
+                        role="button"
+                      >
+                        Learn more
+                      </a>
+                    )}
+                  </div>
+                  {isOpen ? (
+                    <div
+                      onClick={() => setOpen(false)}
+                      className="mt-10 cursor-pointer"
                     >
-                      Learn more
-                    </a>
+                      <a className="p-4 bg-gray-800 rounded-2xl hover:bg-gray-500">
+                        Close Trailer
+                      </a>
+                    </div>
+                  ) : (
+                    <div
+                      onClick={() => setOpen(true)}
+                      className="mt-10 cursor-pointer"
+                    >
+                      <a className="p-4 bg-gray-800 rounded-2xl hover:bg-gray-500">
+                        Watch Trailer
+                      </a>
+                    </div>
                   )}
                 </div>
               </div>
             </div>
+            {tv && tvTrailer && isOpen && (
+              <div className="mt-10 p-2 lg:p-4">
+                <h1 className=" font-bold text-xl">Movies Trailer</h1>
+                <MovieTrailer movieTrailer={tvTrailer} isOpen={isOpen} />
+              </div>
+            )}
+            <div className="mt-10 p-2 lg:p-4">
+              <h1 className=" font-bold text-xl">Suggest TVs</h1>
+              <SuggestTV requestTV={requestTV} />
+            </div>
           </div>
-          <h1></h1>
-        </main>
-      )}
-      <div className="pb-6" />
+        )}
+      </main>
     </div>
   );
 };
@@ -165,9 +249,21 @@ Movie.getInitialProps = async ({ query }) => {
     `https://api.themoviedb.org/3/movie/${query.id}/recommendations?api_key=${prod.api_key}&language=en-US`
   ).then((res) => res.json());
 
+  const movieTrailer = await fetch(
+    `https://api.themoviedb.org/3/movie/${query.id}/videos?api_key=${prod.api_key}&language=en-US`
+  ).then((res) => res.json());
+
+  const tvTrailer = await fetch(
+    `https://api.themoviedb.org/3/tv/${query.id}/videos?api_key=${prod.api_key}&language=en-US`
+  ).then((res) => res.json());
+
+  const requestTV = await fetch(
+    `https://api.themoviedb.org/3/tv/${query.id}/recommendations?api_key=${prod.api_key}&language=en-US`
+  ).then((res) => res.json());
+
   console.log("request", request);
 
-  return { movie, tv, request };
+  return { movie, tv, request, movieTrailer, requestTV, tvTrailer };
 };
 
 export default Movie;

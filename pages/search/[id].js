@@ -1,0 +1,127 @@
+import Head from "next/head";
+import { useRouter } from "next/router";
+import Header from "../../components/Header";
+import Image from "next/image";
+import Link from "next/link";
+import { ThumbUpIcon } from "@heroicons/react/outline";
+
+function Search({ search, searchTv }) {
+  console.log("search", search);
+  const router = useRouter();
+  const { id } = router.query;
+  const base_url = "https://image.tmdb.org/t/p/original/";
+  return (
+    <div>
+      <Head>
+        <title>Hulu-{id}</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <Header />
+      <main className="px-5 my-10 sm:grid md:grid-cols-2 xl:grid-cols-3 3xl:flex flex-wrap justify-center">
+        {search &&
+          search.results.map((search) => (
+            <>
+              {search.backdrop_path ? (
+                <Link href={`/movie/${search.id}`}>
+                  <div className="p-2 group cursor-pointer transition duration-200 ease-in transform sm:hover:scale-105 hover:z-50">
+                    <Image
+                      layout="responsive"
+                      src={`${base_url}${
+                        search.poster_path || search.backdrop_path
+                      }`}
+                      height={1080}
+                      width={1920}
+                      className=" object-contain"
+                    />
+                    <div className="p-2">
+                      <h2 className="mt-1 text-center text-2xl text-white transition-all duration-100 ease-in group-hover:font-bold">
+                        {search.title || search.original_name}
+                      </h2>
+                      <p className="truncate max-w-md text-center">
+                        {search.overview}
+                      </p>
+                      <div className="flex items-center justify-center space-x-4">
+                        <p className="opacity-0 group-hover:opacity-100 text-center">
+                          {search.release_date || search.first_air_date}
+                        </p>
+                        <div className="flex flex-row">
+                          <ThumbUpIcon className="h-5 mx-2 opacity-0 group-hover:opacity-100" />
+                          <p className="opacity-0 group-hover:opacity-100 text-center">
+                            {search.vote_count}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ) : (
+                <></>
+              )}
+            </>
+          ))}
+        {searchTv &&
+          searchTv.results.map((search) => (
+            <>
+              {search.backdrop_path ? (
+                <Link href={`/movie/${search.id}`}>
+                  <div className="p-2 group cursor-pointer transition duration-200 ease-in transform sm:hover:scale-105 hover:z-50">
+                    <Image
+                      layout="responsive"
+                      src={`${base_url}${
+                        search.poster_path || search.backdrop_path
+                      }`}
+                      height={1080}
+                      width={1920}
+                      className=" object-contain"
+                    />
+                    <div className="p-2">
+                      <h2 className="mt-1 text-center text-2xl text-white transition-all duration-100 ease-in group-hover:font-bold">
+                        {search.title || search.original_name}
+                      </h2>
+                      <p className="truncate max-w-md text-center">
+                        {search.overview}
+                      </p>
+                      <div className="flex items-center justify-center space-x-4">
+                        <p className="opacity-0 group-hover:opacity-100 text-center">
+                          {search.release_date || search.first_air_date}
+                        </p>
+                        <div className="flex flex-row">
+                          <ThumbUpIcon className="h-5 mx-2 opacity-0 group-hover:opacity-100" />
+                          <p className="opacity-0 group-hover:opacity-100 text-center">
+                            {search.vote_count}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ) : (
+                <></>
+              )}
+            </>
+          ))}
+      </main>
+    </div>
+  );
+}
+
+export default Search;
+
+Search.getInitialProps = async ({ query }) => {
+  const prod = {
+    url: "https://api.themoviedb.org/3",
+    // api_key: process.env.API_ENV,
+    api_key: "937131eba58ea1dee39d4b5fda3009f2",
+    language: "en-US",
+  };
+
+  const search = await fetch(
+    `https://api.themoviedb.org/3/search/movie?api_key=937131eba58ea1dee39d4b5fda3009f2&language=en-US&query=${query.id}&page=1&include_adult=true`
+  ).then((res) => res.json());
+
+  const searchTv = await fetch(
+    `https://api.themoviedb.org/3/search/tv?api_key=937131eba58ea1dee39d4b5fda3009f2&language=en-US&query=${query.id}&page=1&include_adult=true`
+  ).then((res) => res.json());
+
+  return { search, searchTv };
+};

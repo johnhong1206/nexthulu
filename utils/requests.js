@@ -12,7 +12,6 @@ const prod = {
   api_key: "937131eba58ea1dee39d4b5fda3009f2",
   language: "en-US",
 };
-
 export const environment = "prod";
 const API_KEY = "937131eba58ea1dee39d4b5fda3009f2";
 
@@ -21,6 +20,16 @@ export default {
     tile: "Trending",
     url: `/trending/all/week?api_key=${API_KEY}&language=en-US`,
   },
+  fetchPopular: {
+    title: "Popular",
+    url: `/movie/popular?api_key=${API_KEY}&language=en-US`,
+  },
+
+  fetchUpcomming: {
+    title: "Up Comming",
+    url: `/movie/upcoming?api_key=${API_KEY}&language=en-US&page=1`,
+  },
+
   fetchTopRated: {
     title: "Top Rated",
     url: `/movie/top_rated?api_key=${API_KEY}&language=en-US`,

@@ -1,7 +1,14 @@
-function HeaderItems({ Icon, title, navtoHome }) {
+function HeaderItems({
+  Icon,
+  title,
+  navtoHome,
+  navtosearch,
+  navtocollections,
+  navtotrending,
+}) {
   return (
     <div
-      onClick={navtoHome}
+      onClick={navtoHome || navtocollections || navtosearch || navtotrending}
       className="flex flex-col items-center cursor-pointer group w-12 sm:w-20 hover:text-white "
     >
       <Icon className="h-8 mb-1 group-hover:animate-bounce" />
