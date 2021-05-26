@@ -12,7 +12,7 @@ function MovieTrailer({ movieTrailer, isOpen }) {
         <>
           <div className="h-full max-h-64 max-w-md ">
             <ModalVideo
-              autoplay={0}
+              autoplay={false}
               channel="youtube"
               isOpen={isOpen}
               videoId={trailer.key}
