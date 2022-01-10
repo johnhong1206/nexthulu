@@ -1,5 +1,5 @@
 This is Hulu Movie Info website
-This Project is built with NextJs, react-modal-video, Tailwind CSS, Rest API
+This Project is built with NextJs, react-modal-video, Tailwind CSS, TMDB Rest API
 
 
 ---Main Function---
